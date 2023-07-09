@@ -6,7 +6,7 @@ let ADMINS = [];
 let USERS = [];
 let COURSES = [];
 
-// Middleware 
+// Middleware for admins 
 const adminAuthentication = (req,res,next)=>{
     const {username,password }= req.headers;
     // the above code is equal to 
