@@ -22,6 +22,19 @@ const adminAuthentication = (req,res,next)=>{
     }        
 };
 
+// Middleware for users 
+const userAuthentication = (req,res,next)=>{
+    const {username, password } = req.headers;
+    const user = USERS.find(u=> u.username === username && u.password === password );
+    if(user){
+        req.user = user; // add user object to the request  
+        next();
+    }
+    else{
+        res.status(403).json({ message: 'User authentication failed.'});
+    }
+};
+ 
 // sign up for admins for admins router 
 app.post('/admin/signup',(req,res)=>{
     const admin = req.body;  //admins ={username:"abc123@gmail.com", password: "amkan123213"}
