@@ -6,7 +6,7 @@ let ADMINS = [];
 let USERS = [];
 let COURSES = [];
 
-// Middleware 
+// Middleware for admins 
 const adminAuthentication = (req,res,next)=>{
     const {username,password }= req.headers;
     // the above code is equal to 
@@ -125,4 +125,6 @@ app.get('/admin/courses', adminAuthentication, (req, res) => {
       res.status(404).json({ message: 'Course not found or not available' });
     }
   });
+app.listen(3000);
+
   
