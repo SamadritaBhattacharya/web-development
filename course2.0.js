@@ -71,3 +71,21 @@ const authenticateJwt = (req, res, next) => {
     COURSES.push(course);
     res.json({ message: ' Course created successfully ', courseId: course.id});
   });
+
+  // Course updation route for admins
+app.put('/admin/courses/:courseId', authenticateJwt, (req, res) => {
+  const courseId = parseInt(req.params.courseId);
+  const courseIndex = COURSES.findIndex(c => c.id === courseId);
+
+  if (courseIndex > -1) {
+    const updatedCourse = { ...COURSES[courseIndex], ...req.body };
+    COURSES[courseIndex] = updatedCourse;
+    res.json({ message: 'Course updated successfully' });
+  } else {
+    res.status(404).json({ message: 'Course not found' });
+  }
+});
+
+app.get('/admin/courses', authenticateJwt, (req, res) => {
+  res.json ({ courses: COURSES });
+}); 
