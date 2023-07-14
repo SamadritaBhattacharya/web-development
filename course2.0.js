@@ -21,9 +21,9 @@ const authenticateJwt = (req, res, next) => {
     const authHeader = req.headers.authorization;  //Bearer {token}
   
     if (authHeader) {
-      const token = authHeader.split(' ')[1]; // accepting the 1st element only , ie the baerer which is the encrypted token 
+      const token = authHeader.split(' ')[1]; // accepting the 1st element only, ie, the baerer which is the encrypted token 
   
-      jwt.verify(token, secretKey, (err, user) => {
+      jwt.verify(token, secretKey, (err, user) => {   // decryption happens where it checks whether the token(gibberish) is of the originalString ie, user here, using the secretKey technique of encryption 
         if (err) {
           return res.sendStatus(403);
         }
@@ -36,3 +36,38 @@ const authenticateJwt = (req, res, next) => {
     }
   };
   
+  //Admin sign up 
+  app.post('/admin/signup', (req,res)=>{
+    const admin = req.body;
+    const existingAdmin = ADMINS.find(a=> a.username === admin.username); // finds whether admin already existed or not 
+    if(existingAdmin){
+      res.status(403).json({message:'Admin already existed '});
+    }
+    else{
+      ADMINS.push(admin);
+      const token = generateJwt(admin); // the admins token is created and encrypted 
+      res.json({message:' Admin created successfully ', token });
+    }
+  });
+
+  //Admins login 
+  app.post('/admin/login',(req,res)=>{
+    const {username, password} = req.headers;
+    const admin = ADMINS.find( a=> a.username === username && a.password === password );
+    if(admin){
+      const token = generateJwt(admin); // generating the token encryption 
+      res.json({ message: 'Admin logged in successfully ', token });
+    }
+    else{
+      res.status(403).json({ message: 'Admin authentication failed '});
+    }
+  });
+
+  // admins courses route , for creating courses by admins 
+  app.post('/admin/courses' , authenticateJwt, (req,res) =>{
+    console.log(req.user.username);
+    const course = req.body;
+    course.id = COURSES.length +1;
+    COURSES.push(course);
+    res.json({ message: ' Course created successfully ', courseId: course.id});
+  });
